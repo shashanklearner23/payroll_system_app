@@ -161,6 +161,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);font-si
 </style>
 </head>
 <body>
+    <!-- Install Button -->
+<button id="installBtn" style="display:none;">Install App</button>
 <div id="toasts"></div>
 
 <!-- LOGIN -->
@@ -328,6 +330,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);font-si
 </div>
 
 <script>
+  
 // ════════════════════════════════════════════════
 // DATA — stored as JSON in localStorage.
 // Key: "payrollos_data"
@@ -710,6 +713,31 @@ function toast(msg,type='s'){
   requestAnimationFrame(()=>t.classList.add('show'));
   setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3200);
 }
+
+
+
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBtn').style.display = 'block';
+  });
+
+  document.getElementById('installBtn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('User choice:', outcome);
+    deferredPrompt = null;
+    document.getElementById('installBtn').style.display = 'none';
+  });
+
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('installBtn').style.display = 'none';
+    console.log('PWA installed!');
+  });
+
 </script>
 </body>
 </html>
